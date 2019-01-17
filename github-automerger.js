@@ -8,16 +8,16 @@ const githubWebhookHandler = require("github-webhook-handler");
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 const CONFIG = JSON.parse(fs.readFileSync("config.js"));
-// const HANDLER = githubWebhookHandler({
-//   path: CONFIG.github_webhook_path,
-//   secret: CONFIG.github_webhook_secret
-// });
+const HANDLER = githubWebhookHandler({
+  path: CONFIG.github_webhook_path,
+  secret: CONFIG.github_webhook_secret
+});
 // const GITHUB = new nodeGithub({ version: "3.0.0" });
-// const GITHUB_AUTHENTICATION = {
-//   type: "token",
-//   username: CONFIG.github_username,
-//   token: CONFIG.github_token
-// };
+const GITHUB_AUTHENTICATION = {
+  type: "token",
+  username: CONFIG.github_username,
+  token: CONFIG.github_token
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PR state representation
@@ -53,88 +53,96 @@ var commits = {};
 
 http
   .createServer(function(req, res) {
-    // HANDLER(req, res, function(err) {
-    //   res.statusCode = 404;
-    //   res.end("no such location test");
-    // });
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.write('Hello World!');
-    res.end();
+    HANDLER(req, res, function(err) {
+      res.statusCode = 404;
+      res.end("no such location test");
+    });
+    // res.writeHead(200, {'Content-Type': 'text/plain'});
+    // res.write('Hello World!');
+    // res.end();
   })
   .listen(CONFIG.port, () => console.log("listening on port 8080"));
 
-// HANDLER.on("error", function(err) {
-//   console.error("Error:", err.message);
-// });
+HANDLER.on("*", function(event) {
+  console.log("event**", event.payload);
+});
+
+HANDLER.on("error", function(err) {
+  console.error("Error:", err.message);
+});
 
 // https://developer.github.com/v3/activity/events/types/#pullrequestreviewevent
-// HANDLER.on("pull_request_review", function(event) {
-//   const url = event.payload.pull_request.url;
-//   const head_sha = event.payload.pull_request.head.sha;
-//   const ref = event.payload.pull_request.head.ref;
-//   console.log(url + " -> pull_request_review");
-//   ensurePr(url, head_sha);
-//   prs[url].ref = ref;
-//   populateMergeable(url);
-//   populateReviews(url);
-//   mergeIfReady(url);
-// });
-//
-// // https://developer.github.com/v3/activity/events/types/#pullrequestevent
-// HANDLER.on("pull_request", function(event) {
-//   const url = event.payload.pull_request.url;
-//   const head_sha = event.payload.pull_request.head.sha;
-//   const ref = event.payload.pull_request.head.ref;
-//   console.log(url + " -> pull_request");
-//   ensurePr(url, head_sha);
-//   prs[url].ref = ref;
-//   populateMergeable(url);
-//   populateReviews(url);
-//   mergeIfReady(url);
-// });
+HANDLER.on("pull_request_review", function(event) {
+  const url = event.payload.pull_request.url;
+  const head_sha = event.payload.pull_request.head.sha;
+  const ref = event.payload.pull_request.head.ref;
+  console.log(url + " -> pull_request_review");
+  console.log(head_sha + " -> head_sha pull_request_review");
+  console.log(ref + " -> ref pull_request_review");
+  // ensurePr(url, head_sha);
+  prs[url].ref = ref;
+  // populateMergeable(url);
+  // populateReviews(url);
+  // mergeIfReady(url);
+});
+
+// https://developer.github.com/v3/activity/events/types/#pullrequestevent
+HANDLER.on("pull_request", function(event) {
+  const url = event.payload.pull_request.url;
+  const head_sha = event.payload.pull_request.head.sha;
+  const ref = event.payload.pull_request.head.ref;
+  console.log(url + " -> pull_request");
+  console.log(head_sha + " -> head_sha pull_request");
+  console.log(ref + " -> ref pull_request");
+  // ensurePr(url, head_sha);
+  prs[url].ref = ref;
+  // populateMergeable(url);
+  // populateReviews(url);
+  // mergeIfReady(url);
+});
 
 // https://developer.github.com/v3/activity/events/types/#statusevent
-// HANDLER.on("status", function(event) {
-//   const sha = event.payload.sha;
-//   const context = event.payload.context;
-//   const state = event.payload.state;
-//   var success = false;
-//   switch (state) {
-//     case "success":
-//       success = true;
-//       break;
-//     case "pending":
-//     case "failure":
-//     case "error":
-//       // success = false, still
-//       break;
-//     default:
-//       console.error("Unknown check state '" + state + "'. success = false");
-//       break;
-//   }
-//
-//   const processUrl = function(err, url) {
-//     if (err) {
-//       console.error(err);
-//       return;
-//     }
-//
-//     console.log(url + " -> status");
-//     ensurePr(url, sha);
-//     prs[url].checks[context] = success;
-//     populateMergeable(url);
-//     populateReviews(url);
-//     mergeIfReady(url);
-//   };
-//
-//   if (sha in commits) {
-//     processUrl(null, commits[sha]);
-//   } else {
-//     const owner = event.payload.repository.owner.login;
-//     const repo = event.payload.repository.name;
-//     lookupPullRequest(owner, repo, sha, processUrl);
-//   }
-// });
+HANDLER.on("status", function(event) {
+  const sha = event.payload.sha;
+  const context = event.payload.context;
+  const state = event.payload.state;
+  var success = false;
+  switch (state) {
+    case "success":
+      success = true;
+      break;
+    case "pending":
+    case "failure":
+    case "error":
+      // success = false, still
+      break;
+    default:
+      console.error("Unknown check state '" + state + "'. success = false");
+      break;
+  }
+
+  const processUrl = function(err, url) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    console.log(url + " -> status");
+    // ensurePr(url, sha);
+    prs[url].checks[context] = success;
+    // populateMergeable(url);
+    // populateReviews(url);
+    // mergeIfReady(url);
+  };
+
+  if (sha in commits) {
+    // processUrl(null, commits[sha]);
+  } else {
+    const owner = event.payload.repository.owner.login;
+    const repo = event.payload.repository.name;
+    // lookupPullRequest(owner, repo, sha, processUrl);
+  }
+});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Private helpers
