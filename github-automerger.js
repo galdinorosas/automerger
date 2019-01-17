@@ -65,13 +65,19 @@ http
   })
   .listen(CONFIG.port, () => console.log("listening on port 8080"));
 
-HANDLER.on("*", function(event) {
-  console.log("event**", event.payload);
-});
+HANDLER.on('push', function (event) {
+  console.log('Received a push event for %s to %s',
+    event.payload.repository.name,
+    event.payload.ref)
+})
 
-HANDLER.on("error", function(err) {
-  console.error("Error:", err.message);
-});
+// HANDLER.on("*", function(event) {
+//   console.log("event**", event.payload);
+// });
+//
+// HANDLER.on("error", function(err) {
+//   console.error("Error:", err.message);
+// });
 
 // https://developer.github.com/v3/activity/events/types/#pullrequestreviewevent
 // HANDLER.on("pull_request_review", function(event) {
