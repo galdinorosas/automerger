@@ -54,6 +54,8 @@ var commits = {};
 http
   .createServer(function(req, res) {
     HANDLER(req, res, function(err) {
+
+      console.log("err", err);
       res.statusCode = 404;
       res.end("no such location test");
     });
