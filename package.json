@@ -9,7 +9,9 @@
     "node-sass": "^4.7.2",
     "parse-github-url": "^1.0.2"
   },
-  "scripts": {},
+  "scripts": {
+    "start": "node github-automerger.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://gecgithub01.walmart.com/g0r009y/github-automerger.git"
