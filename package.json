@@ -1,0 +1,22 @@
+{
+  "name": "github-automerger",
+  "version": "1.0.1",
+  "description": "A GitHub webhook target that merges Pull Requests when they're ready",
+  "main": "github-automerger.js",
+  "dependencies": {
+    "@octokit/rest": "^16.3.2",
+    "github-webhook-handler": "^0.7.1",
+    "node-sass": "^4.7.2",
+    "parse-github-url": "^1.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Nothing to build\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gecgithub01.walmart.com/g0r009y/github-automerger.git"
+  },
+  "author": "Galdino Rosas",
+  "license": "Apache-2.0"
+}

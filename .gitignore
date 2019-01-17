@@ -1,0 +1,6 @@
+node_modules
+config.js
+.npmrc
+cx.json
+linux-x64-57_binding.node
+._npm
