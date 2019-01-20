@@ -7,7 +7,7 @@ const githubWebhookHandler = require("github-webhook-handler");
 // Setup
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// const CONFIG = JSON.parse(fs.readFileSync("config.js"));
+const CONFIG = JSON.parse(fs.readFileSync("config.js"));
 // const HANDLER = githubWebhookHandler({
 //   path: CONFIG.github_webhook_path,
 //   secret: CONFIG.github_webhook_secret
