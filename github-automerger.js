@@ -7,11 +7,11 @@ const githubWebhookHandler = require("github-webhook-handler");
 // Setup
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-const CONFIG = JSON.parse(fs.readFileSync("config.js"));
-const HANDLER = githubWebhookHandler({
-  path: CONFIG.github_webhook_path,
-  secret: CONFIG.github_webhook_secret
-});
+// const CONFIG = JSON.parse(fs.readFileSync("config.js"));
+// const HANDLER = githubWebhookHandler({
+//   path: CONFIG.github_webhook_path,
+//   secret: CONFIG.github_webhook_secret
+// });
 // const GITHUB = new nodeGithub({ version: "3.0.0" });
 // const GITHUB_AUTHENTICATION = {
 //   type: "token",
@@ -53,23 +53,23 @@ var commits = {};
 
 http
   .createServer(function(req, res) {
-    HANDLER(req, res, function(err) {
-
-      console.log("err", err);
-      res.statusCode = 404;
-      res.end("no such location test");
-    });
-    // res.writeHead(200, {'Content-Type': 'text/plain'});
-    // res.write('Hello World!');
-    // res.end();
+    // HANDLER(req, res, function(err) {
+    //
+    //   console.log("err", err);
+    //   res.statusCode = 404;
+    //   res.end("no such location test");
+    // });
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.write('Hello World!');
+    res.end();
   })
   .listen(CONFIG.port, () => console.log("listening on port 8080"));
 
-HANDLER.on('push', function (event) {
-  console.log('Received a push event for %s to %s',
-    event.payload.repository.name,
-    event.payload.ref)
-})
+// HANDLER.on('push', function (event) {
+//   console.log('Received a push event for %s to %s',
+//     event.payload.repository.name,
+//     event.payload.ref)
+// })
 
 // HANDLER.on("*", function(event) {
 //   console.log("event**", event.payload);
