@@ -8,14 +8,13 @@ const githubWebhookHandler = require("github-webhook-handler");
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 const CONFIG = JSON.parse(fs.readFileSync("config.js"));
-const TEST_CONFIG = fs.readFileSync("config/github.token");
-console.log("TEST_CONFIG type of::", typeof TEST_CONFIG);
-console.log("TEST_CONFIG BUFFER CHECK::", Buffer.isBuffer(TEST_CONFIG));
-console.log("TEST_CONFIG to string::", TEST_CONFIG.toString());
-// const HANDLER = githubWebhookHandler({
-//   path: CONFIG.github_webhook_path,
-//   secret: CONFIG.github_webhook_secret
-// });
+const GITHUB_TOKEN = fs.readFileSync("config/github.token");
+console.log("CONFIG::", CONFIG);
+
+const HANDLER = githubWebhookHandler({
+  path: CONFIG.github_webhook_path,
+  secret: CONFIG.github_webhook_secret
+});
 // const GITHUB = new nodeGithub({ version: "3.0.0" });
 // const GITHUB_AUTHENTICATION = {
 //   type: "token",
@@ -57,15 +56,15 @@ var commits = {};
 
 http
   .createServer(function(req, res) {
-    // HANDLER(req, res, function(err) {
-    //
-    //   console.log("err", err);
-    //   res.statusCode = 404;
-    //   res.end("no such location test");
-    // });
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.write('Hello World!');
-    res.end();
+    HANDLER(req, res, function(err) {
+
+      console.log("err", err);
+      res.statusCode = 404;
+      res.end("no such location test");
+    });
+    // res.writeHead(200, {'Content-Type': 'text/plain'});
+    // res.write('Hello World!');
+    // res.end();
   })
   .listen(CONFIG.port, () => console.log("listening on port 8080"));
 
@@ -73,7 +72,7 @@ http
 //   console.log('Received a push event for %s to %s',
 //     event.payload.repository.name,
 //     event.payload.ref)
-// })
+// });
 
 // HANDLER.on("*", function(event) {
 //   console.log("event**", event.payload);
