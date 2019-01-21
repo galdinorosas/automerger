@@ -55,13 +55,14 @@ var commits = {};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 http
-  .createServer(function(req, res) {
-    HANDLER(req, res, function(err) {
-
-      console.log("err", err);
-      res.statusCode = 404;
-      res.end("no such location test");
-    });
+  .createServer((req, res) => {
+    // HANDLER(req, res, err => {
+    //
+    //   console.log("err", err);
+    //   res.statusCode = 404;
+    //   res.end("no such location test");
+    // });
+    console.log("req::", req);
     // res.writeHead(200, {'Content-Type': 'text/plain'});
     // res.write('Hello World!');
     // res.end();
