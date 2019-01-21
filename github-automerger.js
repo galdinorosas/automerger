@@ -11,6 +11,7 @@ const CONFIG = JSON.parse(fs.readFileSync("config.js"));
 const TEST_CONFIG = fs.readFileSync("config/github.token");
 console.log("TEST_CONFIG type of::", typeof TEST_CONFIG);
 console.log("TEST_CONFIG BUFFER CHECK::", Buffer.isBuffer(TEST_CONFIG));
+console.log("TEST_CONFIG to string::", TEST_CONFIG.toString());
 // const HANDLER = githubWebhookHandler({
 //   path: CONFIG.github_webhook_path,
 //   secret: CONFIG.github_webhook_secret
