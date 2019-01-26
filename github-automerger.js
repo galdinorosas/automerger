@@ -5,7 +5,7 @@ const githubWebhookHandler = require("./components/github-webhook-handler/github
 const Octokit = require('@octokit/rest');
 const GITHUB_TOKEN = fs.readFileSync("config/github.token");
 const octokit = new Octokit ({
-  auth: `token ${GITHUB_TOKEN}`;
+  auth: `token ${GITHUB_TOKEN}`
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Setup
