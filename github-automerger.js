@@ -15,6 +15,8 @@ const HANDLER = githubWebhookHandler({
   path: CONFIG.github_webhook_path,
   secret: CONFIG.github_webhook_secret
 });
+console.log("github_webhook_path::", CONFIG.github_webhook_path);
+console.log("github_webhook_secret::", CONFIG.github_webhook_secret);
 console.log("HANDLER::", HANDLER);
 // const GITHUB = new nodeGithub({ version: "3.0.0" });
 // const GITHUB_AUTHENTICATION = {
@@ -56,13 +58,13 @@ var commits = {};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 http
-  .createServer((req, res) => {
-    HANDLER(req, res, err => {
+  .createServer(function (req, res) {
+    HANDLER(function (req, res, err {
 
       console.log("err", err);
       res.statusCode = 404;
       res.end("no such location test");
-    });
+    }));
     console.log("req::", req);
     // res.writeHead(200, {'Content-Type': 'text/plain'});
     // res.write('Hello World!');
@@ -83,6 +85,24 @@ http
 // HANDLER.on("error", function(err) {
 //   console.error("Error:", err.message);
 // });
+
+HANDLER.on("error", function (err) {
+  console.error("Error:", err.message);
+});
+
+HANDLER.on("push", function (event) {
+  console.log("Received a push event for %s to %s",
+    event.payload.repository.name,
+    event.payload.ref);
+});
+
+HANDLER.on("issues", function (event) {
+  console.log("Received an issue event for %s action=%s: #%d %s",
+    event.payload.repository.name,
+    event.payload.action,
+    event.payload.issue.number,
+    event.payload.issue.title);
+});
 
 // https://developer.github.com/v3/activity/events/types/#pullrequestreviewevent
 // HANDLER.on("pull_request_review", function(event) {
