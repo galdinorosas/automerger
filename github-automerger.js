@@ -10,15 +10,12 @@ const githubWebhookHandler = require("./components/github-webhook-handler/github
 
 const CONFIG = JSON.parse(fs.readFileSync("config.js"));
 const GITHUB_TOKEN = fs.readFileSync("config/github.token");
-console.log("CONFIG::", CONFIG);
 
 const HANDLER = githubWebhookHandler({
   path: CONFIG.github_webhook_path,
   secret: CONFIG.github_webhook_secret
 });
-console.log("github_webhook_path::", CONFIG.github_webhook_path);
-console.log("github_webhook_secret::", CONFIG.github_webhook_secret);
-console.log("HANDLER::", HANDLER);
+
 // const GITHUB = new nodeGithub({ version: "3.0.0" });
 // const GITHUB_AUTHENTICATION = {
 //   type: "token",
@@ -61,7 +58,6 @@ var commits = {};
 http
   .createServer(function (req, res) {
     HANDLER(req, res, function (err) {
-    console.log("err", err);
     res.statusCode = 404;
     res.end('no such location');
   });
