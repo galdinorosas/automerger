@@ -15,6 +15,7 @@ const HANDLER = githubWebhookHandler({
   path: CONFIG.github_webhook_path,
   secret: CONFIG.github_webhook_secret
 });
+console.log("HANDLER::", HANDLER);
 // const GITHUB = new nodeGithub({ version: "3.0.0" });
 // const GITHUB_AUTHENTICATION = {
 //   type: "token",
@@ -56,12 +57,12 @@ var commits = {};
 
 http
   .createServer((req, res) => {
-    // HANDLER(req, res, err => {
-    //
-    //   console.log("err", err);
-    //   res.statusCode = 404;
-    //   res.end("no such location test");
-    // });
+    HANDLER(req, res, err => {
+
+      console.log("err", err);
+      res.statusCode = 404;
+      res.end("no such location test");
+    });
     console.log("req::", req);
     // res.writeHead(200, {'Content-Type': 'text/plain'});
     // res.write('Hello World!');
