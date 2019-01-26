@@ -190,6 +190,8 @@ function ensurePr(url, head_sha) {
     prs[url].mergeable = false;
   }
   commits[head_sha] = url;
+  console.log("prs::", prs);
+  console.log("commits::", commits);
 }
 
 // GET pull requests and check their mergeable status
@@ -332,6 +334,7 @@ function lookupPullRequest(owner, repo, sha, callback) {
 function parsePullRequestUrl(url) {
   const re = /^https?:\/\/([^\/]+)\/repos\/([^\/]+)\/([^\/]+)\/pulls\/(\d+)$/;
   const match = re.exec(url);
+  console.log("match::", match);
   return {
     owner: match[2],
     repo: match[3],
