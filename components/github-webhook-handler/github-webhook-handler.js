@@ -41,15 +41,10 @@ function create (options) {
   }
 
   function handler (req, res, callback) {
-    console.log("req.url.split('?').shift() !== options.path", req.url.split('?').shift() !== options.path);
     if (!options.path.indexOf(req.headers.host) || req.method !== 'POST') {
-
       console.log("directly entering handler.");
-      console.log("req.url::", req.url);
       return callback();
     }
-
-
 
     function hasError (msg) {
       console.log("hasError msg::", msg);
