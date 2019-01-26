@@ -46,6 +46,7 @@ function create (options) {
       console.log("req.url::", req.url);
       console.log("options.path::",options.path);
       console.log("req.method::",req.method);
+      console.log("req.::", req);
       return callback();
     }
 
