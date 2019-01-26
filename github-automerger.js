@@ -2,14 +2,16 @@ const fs = require("fs");
 const http = require("http");
 // const githubWebhookHandler = require("github-webhook-handler");
 const githubWebhookHandler = require("./components/github-webhook-handler/github-webhook-handler");
-// const nodeGithub = require("github");
-
+const Octokit = require('@octokit/rest');
+const GITHUB_TOKEN = fs.readFileSync("config/github.token");
+const octokit = new Octokit ({
+  auth: `token ${GITHUB_TOKEN}`;
+});
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Setup
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 const CONFIG = JSON.parse(fs.readFileSync("config.js"));
-const GITHUB_TOKEN = fs.readFileSync("config/github.token");
 
 const HANDLER = githubWebhookHandler({
   path: CONFIG.github_webhook_path,
@@ -128,6 +130,7 @@ HANDLER.on("pull_request", function(event) {
   prs[url].ref = ref;
   populateMergeable(url);
   populateReviews(url);
+  console.log("prs within handler pull_request::", prs);
   // mergeIfReady(url);
 });
 
@@ -213,6 +216,10 @@ function populateMergeable(url) {
 function populateReviews(url) {
   console.log("populateReviews(" + url + ")");
   const params = parsePullRequestUrl(url);
+  octokit.pulls.listReviews(params).then(res => {
+    console.log("listReviews response::", res);
+    console.log("listReviews response data::", res.data);
+  });
   // GITHUB.pullRequests.getReviews(params, function(err, res) {
   //   if (!(url in prs)) {
   //     console.error(url + " not found in prs hash");
