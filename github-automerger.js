@@ -1,6 +1,7 @@
 const fs = require("fs");
 const http = require("http");
-const githubWebhookHandler = require("github-webhook-handler");
+// const githubWebhookHandler = require("github-webhook-handler");
+const githubWebhookHandler = require("./components/github-webhook-handler/github-webhook-handler");
 // const nodeGithub = require("github");
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +62,7 @@ http
   .createServer(function (req, res) {
     HANDLER(req, res, function (err) {
     console.log("err", err);
-    res.statusCode = 404
+    res.statusCode = 404;
     res.end('no such location');
   });
     // console.log("req::", req);
