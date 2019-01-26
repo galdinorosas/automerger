@@ -139,6 +139,10 @@ HANDLER.on("status", function(event) {
   const sha = event.payload.sha;
   const context = event.payload.context;
   const state = event.payload.state;
+  console.log(sha + " -> sha");
+  console.log(context + " -> context");
+  console.log(state + " -> state");
+  console.log(commits + " -> commits");
   var success = false;
   switch (state) {
     case "success":
