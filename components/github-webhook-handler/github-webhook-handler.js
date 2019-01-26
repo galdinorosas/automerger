@@ -43,7 +43,7 @@ function create (options) {
   function handler (req, res, callback) {
     if (req.url.split('?').shift() !== options.path || req.method !== 'POST') {
       console.log("directly entering handler.");
-      console.log("req.url.split('?').shift()::", req.url.split('?').shift());
+      console.log("req.url::", req.url);
       console.log("options.path::",options.path);
       console.log("req.method::",req.method);
       return callback();
