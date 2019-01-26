@@ -42,6 +42,7 @@ function create (options) {
 
   function handler (req, res, callback) {
     if (!options.path.indexOf(req.headers.host) || req.method !== 'POST') {
+      console.log("req.url.split('?').shift() !== options.path", req.url.split('?').shift() !== options.path);
       console.log("directly entering handler.");
       console.log("req.url::", req.url);
       return callback();
