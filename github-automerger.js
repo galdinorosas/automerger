@@ -59,13 +59,12 @@ var commits = {};
 
 http
   .createServer(function (req, res) {
-    HANDLER(function (req, res, err {
-
-      console.log("err", err);
-      res.statusCode = 404;
-      res.end("no such location test");
-    }));
-    console.log("req::", req);
+    HANDLER(req, res, function (err) {
+    console.log("err", err);
+    res.statusCode = 404
+    res.end('no such location')
+  })
+    // console.log("req::", req);
     // res.writeHead(200, {'Content-Type': 'text/plain'});
     // res.write('Hello World!');
     // res.end();
