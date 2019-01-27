@@ -2,9 +2,9 @@ const fs = require("fs");
 const http = require("http");
 // const githubWebhookHandler = require("github-webhook-handler");
 const githubWebhookHandler = require("./components/github-webhook-handler/github-webhook-handler");
-const Octokit = require('@octokit/rest');
+const Octokit = require("@octokit/rest");
 const GITHUB_TOKEN = fs.readFileSync("config/github.token");
-const octokit = new Octokit ({
+const octokit = new Octokit({
   auth: `token ${GITHUB_TOKEN}`
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,13 +17,6 @@ const HANDLER = githubWebhookHandler({
   path: CONFIG.github_webhook_path,
   secret: CONFIG.github_webhook_secret
 });
-
-// const GITHUB = new nodeGithub({ version: "3.0.0" });
-// const GITHUB_AUTHENTICATION = {
-//   type: "token",
-//   username: CONFIG.github_username,
-//   token: CONFIG.github_token
-// };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PR state representation
@@ -58,49 +51,26 @@ var commits = {};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 http
-  .createServer(function (req, res) {
-    HANDLER(req, res, function (err) {
-    res.statusCode = 404;
-    res.end('no such location');
-  });
-    // console.log("req::", req);
-    // res.writeHead(200, {'Content-Type': 'text/plain'});
-    // res.write('Hello World!');
-    // res.end();
+  .createServer(function(req, res) {
+    HANDLER(req, res, function(err) {
+      res.statusCode = 404;
+      res.end("no such location");
+    });
   })
   .listen(CONFIG.port, () => console.log("listening on port 8080"));
 
-// HANDLER.on('push', function (event) {
-//   console.log('Received a push event for %s to %s',
-//     event.payload.repository.name,
-//     event.payload.ref)
-// });
-//
-// HANDLER.on("*", function(event) {
-//   console.log("event**", event.payload);
-// });
-//
-// HANDLER.on("error", function(err) {
-//   console.error("Error:", err.message);
-// });
+HANDLER.on("error", function(err) {
+  console.error("Error:", err.message);
+});
 
-
-// HANDLER.on("error", function (err) {
-//   console.error("Error:", err.message);
-// });
-//
-// HANDLER.on("push", function (event) {
-//   console.log("Received a push event for %s to %s",
-//     event.payload.repository.name,
-//     event.payload.ref);
-// });
-
-HANDLER.on("issues", function (event) {
-  console.log("Received an issue event for %s action=%s: #%d %s",
+HANDLER.on("issues", function(event) {
+  console.log(
+    "Received an issue event for %s action=%s: #%d %s",
     event.payload.repository.name,
     event.payload.action,
     event.payload.issue.number,
-    event.payload.issue.title);
+    event.payload.issue.title
+  );
 });
 
 // https://developer.github.com/v3/activity/events/types/#pullrequestreviewevent
@@ -220,35 +190,39 @@ function populateMergeable(url) {
 function populateReviews(url) {
   console.log("populateReviews(" + url + ")");
   const params = parsePullRequestUrl(url);
-  octokit.pulls.listReviews(params).then(res => {
-    console.log("listReviews response::", res);
-    console.log("listReviews response data::", res.data);
-  });
-  // GITHUB.pullRequests.getReviews(params, function(err, res) {
-  //   if (!(url in prs)) {
-  //     console.error(url + " not found in prs hash");
-  //     return;
-  //   }
-  //
-  //   // A bug in 'github' node module?
-  //   if ("data" in res) {
-  //     res = res.data;
-  //   }
-  //
-  //   prs[url].reviews = {};
-  //   for (var i in res) {
-  //     console.log("i = " + i);
-  //     var review = res[i];
-  //     console.log("review = " + JSON.stringify(review, null, " "));
-  //     var user = review.user.login;
-  //     // Since reviews are returned in chronological order, the last
-  //     // one found is the most recent. We'll use that one.
-  //     var approved = review.state.toLowerCase() == "approved";
-  //     prs[url].reviews[user] = approved;
-  //   }
-  //
-  //   mergeIfReady(url);
-  // });
+  octokit.pulls
+    .listReviews(params)
+    .then(res => {
+      console.log("listReviews response data::", res.data);
+      if (!(url in prs)) {
+        console.error(url + " not found in prs hash");
+        return;
+      }
+
+      if ("data" in res) {
+        res = res.data;
+      }
+
+      prs[url].reviews = {};
+
+      for (var i in res) {
+        console.log("i = " + i);
+        var review = res[i];
+        console.log("review = " + JSON.stringify(review, null, " "));
+        var user = review.user.login;
+        // Since reviews are returned in chronological order, the last
+        // one found is the most recent. We'll use that one.
+        var approved = review.state.toLowerCase() == "approved";
+        prs[url].reviews[user] = approved;
+      }
+
+      console.log("prs within populdateReviews::", prs);
+
+      // mergeIfReady(url);
+    })
+    .catch(err => {
+      console.error(url + " not found in prs hash");
+    });
 }
 
 // Perform a merge on this PR if:
