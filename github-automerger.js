@@ -146,7 +146,7 @@ HANDLER.on("status", function(event) {
   } else {
     const owner = event.payload.repository.owner.login;
     const repo = event.payload.repository.name;
-    // lookupPullRequest(owner, repo, sha, processUrl);
+    lookupPullRequest(owner, repo, sha, processUrl);
   }
 });
 
@@ -166,6 +166,9 @@ function ensurePr(url, head_sha) {
     prs[url].mergeable = false;
   }
   commits[head_sha] = url;
+
+  console.log("prs within ensurePR::", prs);
+  console.log("commits within ensurePR::", commits);
 }
 
 // GET pull requests and check their mergeable status
@@ -180,7 +183,9 @@ function populateMergeable(url) {
           return;
         }
         prs[url].mergeable = !!pr.data.mergeable;
-        mergeIfReady(url);
+        // mergeIfReady(url);
+        console.log("prs within populateMergeable::", prs);
+        console.log("prs within populateMergeable for url of interest::", prs[url]);
       })
       .catch(err => {
         console.error("pr get request error: ", err);
@@ -217,7 +222,10 @@ function populateReviews(url) {
         prs[url].reviews[user] = approved;
       }
 
-      mergeIfReady(url);
+      console.log("prs within populateReviews::", prs);
+      console.log("prs within populateReviews for url of interest::", prs[url]);
+
+      // mergeIfReady(url);
     })
     .catch(err => {
       console.error("pr listReviews request error: ", err);
