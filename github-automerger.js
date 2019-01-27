@@ -100,7 +100,6 @@ HANDLER.on("pull_request", function(event) {
   prs[url].ref = ref;
   populateMergeable(url);
   populateReviews(url);
-  console.log("prs within handler pull_request::", prs);
   // mergeIfReady(url);
 });
 
@@ -167,22 +166,25 @@ function ensurePr(url, head_sha) {
     prs[url].mergeable = false;
   }
   commits[head_sha] = url;
-  console.log("prs::", prs);
-  console.log("commits::", commits);
 }
 
 // GET pull requests and check their mergeable status
 function populateMergeable(url) {
   setTimeout(function() {
     const params = parsePullRequestUrl(url);
-    // GITHUB.pullRequests.get(params, function(err, pr) {
-    //   if (!(url in prs)) {
-    //     console.error(url + " not found in prs hash");
-    //     return;
-    //   }
-    //   prs[url].mergeable = !!pr.data.mergeable;
-    //   mergeIfReady(url);
-    // });
+    octokit.pulls
+      .get(params)
+      .then(pr => {
+        if (!(url in prs)) {
+          console.error(url + " not found in prs hash");
+          return;
+        }
+        prs[url].mergeable = !!pr.data.mergeable;
+        mergeIfReady(url);
+      })
+      .catch(err => {
+        console.error("pr get request error: ", err);
+      });
   }, 10000);
 }
 
@@ -193,7 +195,6 @@ function populateReviews(url) {
   octokit.pulls
     .listReviews(params)
     .then(res => {
-      console.log("listReviews response data::", res.data);
       if (!(url in prs)) {
         console.error(url + " not found in prs hash");
         return;
@@ -216,12 +217,10 @@ function populateReviews(url) {
         prs[url].reviews[user] = approved;
       }
 
-      console.log("prs within populdateReviews::", prs);
-
-      // mergeIfReady(url);
+      mergeIfReady(url);
     })
     .catch(err => {
-      console.error(url + " not found in prs hash");
+      console.error("pr listReviews request error: ", err);
     });
 }
 
@@ -264,7 +263,7 @@ function mergeIfReady(url) {
       }
     };
 
-    // mergePullRequest(url, mergeCallback);
+    mergePullRequest(url, mergeCallback);
   }
 }
 
@@ -275,8 +274,7 @@ function mergePullRequest(url, callback) {
   }
   const params = parsePullRequestUrl(url);
   params.sha = prs[url].head_sha;
-  // GITHUB.authenticate(GITHUB_AUTHENTICATION);
-  // GITHUB.pullRequests.merge(params, callback);
+  octokit.pulls.merge(params).then(res => callback(null, res)).catch(err => callback(err, null));
 }
 
 function deleteReference(url, callback) {
@@ -284,10 +282,13 @@ function deleteReference(url, callback) {
     console.error(url + " not found in prs hash");
     return;
   }
-  const params = parsePullRequestUrl(url);
-  params.ref = "heads/" + prs[url].ref;
-  // GITHUB.authenticate(GITHUB_AUTHENTICATION);
-  // GITHUB.gitdata.deleteReference(params, callback);
+  let params = parsePullRequestUrl(url);
+  delete params.number;
+  params.ref = prs[url].ref;
+  octokit.git
+    .deleteRef(params)
+    .then(res => callback(null, res))
+    .catch(err => callback(err, null));
 }
 
 // Finds the PR URL associated with the given head SHA
@@ -296,24 +297,27 @@ function lookupPullRequest(owner, repo, sha, callback) {
     owner: owner,
     repo: repo
   };
-  // GITHUB.pullRequests.getAll(params, function(err, res) {
-  //   if (err) {
-  //     console.log("err with pr.get: " + err);
-  //     callback(err, null);
-  //     return;
-  //   }
-  //
-  //   for (var i in res.data) {
-  //     const pr = res.data[i];
-  //     if (pr.head.sha == sha) {
-  //       const url = pr.url;
-  //       callback(null, url);
-  //       return;
-  //     }
-  //   }
-  //
-  //   callback("PR not found: (" + owner + ", " + repo + ", " + sha + ")", null);
-  // });
+
+  octokit.pulls
+    .list(params)
+    .then(res => {
+      for (var i in res.data) {
+        const pr = res.data[i];
+        if (pr.head.sha == sha) {
+          const url = pr.url;
+          callback(null, url);
+          return;
+        }
+      }
+      callback(
+        "PR not found: (" + owner + ", " + repo + ", " + sha + ")",
+        null
+      );
+    })
+    .catch(err => {
+      console.log("err with pr get: " + err);
+      callback(err, null);
+    });
 }
 
 function parsePullRequestUrl(url) {
