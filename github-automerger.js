@@ -94,13 +94,6 @@ HANDLER.on("pull_request", function(event) {
   const head_sha = event.payload.pull_request.head.sha;
   const ref = event.payload.pull_request.head.ref;
 
-  for (var i in event.payload.pull_request) {
-    console.log("i = " + i);
-    var pr = res[i];
-    console.log("pr = " + JSON.stringify(pr, null, " "));
-  }
-
-  console.log(event.payload.pull_request + " -> event payload pull_request");
   console.log(url + " -> pull_request");
   console.log(head_sha + " -> head_sha pull_request");
   console.log(ref + " -> ref pull_request");
