@@ -185,7 +185,7 @@ function populateMergeable(url) {
           return;
         }
         prs[url].mergeable = !!pr.data.mergeable;
-        // mergeIfReady(url);
+        mergeIfReady(url);
         console.log("prs within populateMergeable::", prs);
         console.log("prs within populateMergeable for url of interest::", prs[url]);
       })
@@ -227,7 +227,7 @@ function populateReviews(url) {
       console.log("prs within populateReviews::", prs);
       console.log("prs within populateReviews for url of interest::", prs[url]);
 
-      // mergeIfReady(url);
+      mergeIfReady(url);
     })
     .catch(err => {
       console.error("pr listReviews request error: ", err);
