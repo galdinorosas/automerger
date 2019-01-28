@@ -261,6 +261,7 @@ function mergeIfReady(url) {
     };
 
     const mergeCallback = function(err, res) {
+      console.log("mergeCallback err::", err);
       if (err) {
         console.error("Error: could not merge: " + err);
         delete prs[url].done;
@@ -284,6 +285,7 @@ function mergePullRequest(url, callback) {
   }
   const params = parsePullRequestUrl(url);
   params.sha = prs[url].head_sha;
+  console.log("mergePullRequest params::", params);
   octokit.pulls.merge(params).then(res => callback(null, res)).catch(err => callback(err, null));
 }
 
