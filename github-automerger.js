@@ -2,11 +2,18 @@ const fs = require("fs");
 const http = require("http");
 // const githubWebhookHandler = require("github-webhook-handler");
 const githubWebhookHandler = require("./components/github-webhook-handler/github-webhook-handler");
-const Octokit = require("@octokit/rest");
+// const Octokit = require("@octokit/rest");
+const octokit = require("@octokit/rest")();
 const GITHUB_TOKEN = fs.readFileSync("config/github.token");
-const octokit = new Octokit({
-  auth: `token ${GITHUB_TOKEN}`
+// const octokit = new Octokit({
+//   auth: `token ${GITHUB_TOKEN}`
+// });
+octokit.authenticate({
+  type: "token",
+  token: GITHUB_TOKEN
 });
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Setup
 ///////////////////////////////////////////////////////////////////////////////////////////////////
