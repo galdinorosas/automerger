@@ -339,7 +339,7 @@ function parsePullRequestUrl(url) {
   return {
     owner: match[2],
     repo: match[3],
-    number: match[4]
+    number: parseInt(match[4])
   };
 }
 
