@@ -140,7 +140,6 @@ HANDLER.on("status", function(event) {
       return;
     }
 
-    console.log(url + " -> status");
     ensurePr(url, sha);
     prs[url].checks[context] = success;
     populateMergeable(url);
@@ -175,9 +174,6 @@ function ensurePr(url, head_sha) {
     prs[url].has_merge_conflicts = false;
   }
   commits[head_sha] = url;
-
-  console.log("prs within ensurePR::", prs);
-  console.log("commits within ensurePR::", commits);
 }
 
 function populateMergeData(url, event) {
@@ -197,8 +193,6 @@ function populateMergeData(url, event) {
     baseBranchHeadSha: baseBranchHeadSha
   }
 
-  console.log("prs within populateMergeData::", prs);
-  console.log("commits within populateMergeData::", commits);
 }
 
 // GET pull requests and check their mergeable status
@@ -208,15 +202,12 @@ function populateMergeable(url) {
     octokit.pulls
       .get(params)
       .then(pr => {
-        console.log("pr within populateMergeable::", pr);
         if (!(url in prs)) {
           console.error(url + " not found in prs hash");
           return;
         }
         prs[url].mergeable = !!pr.data.mergeable;
         mergeIfReady(url);
-        console.log("prs within populateMergeable::", prs);
-        console.log("prs within populateMergeable for url of interest::", prs[url]);
       })
       .catch(err => {
         console.error("pr get request error: ", err);
@@ -226,7 +217,6 @@ function populateMergeable(url) {
 
 // GET pr reviews and check their approved status. Replace existing reviews.
 function populateReviews(url) {
-  console.log("populateReviews(" + url + ")");
   const params = parsePullRequestUrl(url);
   octokit.pulls
     .listReviews(params)
@@ -252,9 +242,6 @@ function populateReviews(url) {
         var approved = review.state.toLowerCase() == "approved";
         prs[url].reviews[user] = approved;
       }
-
-      console.log("prs within populateReviews::", prs);
-      console.log("prs within populateReviews for url of interest::", prs[url]);
 
       mergeIfReady(url);
     })
@@ -396,7 +383,6 @@ function lookupPullRequest(owner, repo, sha, callback) {
       );
     })
     .catch(err => {
-      console.log("err with pr get: " + err);
       callback(err, null);
     });
 }
@@ -404,7 +390,6 @@ function lookupPullRequest(owner, repo, sha, callback) {
 function parsePullRequestUrl(url) {
   const re = /^https?:\/\/([^\/]+)\/repos\/([^\/]+)\/([^\/]+)\/pulls\/(\d+)$/;
   const match = re.exec(url);
-  console.log("match::", match);
   return {
     owner: match[2],
     repo: match[3],
