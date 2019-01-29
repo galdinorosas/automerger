@@ -5,13 +5,10 @@ const githubWebhookHandler = require("./components/github-webhook-handler/github
 // const Octokit = require("@octokit/rest");
 const octokit = require("@octokit/rest")();
 const GITHUB_TOKEN = fs.readFileSync("config/github.token");
+const FORK_TOKEN = fs.readFileSync("config/fork/fork.token");
 // const octokit = new Octokit({
 //   auth: `token ${GITHUB_TOKEN}`
 // });
-octokit.authenticate({
-  type: "token",
-  token: GITHUB_TOKEN
-});
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -329,6 +326,10 @@ function mergePullRequest(url, callback) {
   const params = parsePullRequestUrl(url);
   params.sha = prs[url].head_sha;
   console.log("mergePullRequest params::", params);
+  octokit.authenticate({
+    type: "token",
+    token: GITHUB_TOKEN
+  });
   octokit.pulls.merge(params).then(res => callback(null, res)).catch(err => callback(err, null));
 }
 
@@ -345,6 +346,15 @@ function updatePullRequestBranch(url, callback) {
     head: prs[url].merge_data.baseBranchHeadSha
   };
   console.log("updatePullRequestBranch params::", params);
+  octokit.authenticate({
+    type: "token",
+    token: GITHUB_TOKEN
+  });
+
+  octokit.authenticate({
+    type: "token",
+    token: FORK_TOKEN
+  });
   octokit.repos.merge(params).then(res => callback(null, res)).catch(err => callback(err, null));
 }
 
