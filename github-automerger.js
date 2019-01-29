@@ -90,6 +90,7 @@ HANDLER.on("pull_request_review", function(event) {
   console.log(ref + " -> ref pull_request_review");
   ensurePr(url, head_sha);
   prs[url].ref = ref;
+  populateMergeData(url, event);
   populateMergeable(url);
   populateReviews(url);
   mergeIfReady(url);
@@ -106,6 +107,7 @@ HANDLER.on("pull_request", function(event) {
   console.log(ref + " -> ref pull_request");
   ensurePr(url, head_sha);
   prs[url].ref = ref;
+  populateMergeData(url, event);
   populateMergeable(url);
   populateReviews(url);
   mergeIfReady(url);
@@ -172,11 +174,33 @@ function ensurePr(url, head_sha) {
     prs[url].checks = {};
     prs[url].reviews = {};
     prs[url].mergeable = false;
+    prs[url].merge_data = {};
   }
   commits[head_sha] = url;
 
   console.log("prs within ensurePR::", prs);
   console.log("commits within ensurePR::", commits);
+}
+
+function populateMergeData(url, event) {
+  const headBranchUserName = event.payload.pull_request.head.user.login;
+  const headBranchRepoName = event.payload.pull_request.head.repo.name;
+  const headBranchName = event.payload.pull_request.head.ref;
+  const baseBranchHeadSha = event.payload.pull_request.base.sha;
+
+  if (!(url in prs)) {
+    prs[url] = {};
+  }
+
+  prs[url].merge_data = {
+    headBranchUserName: headBranchUserName,
+    headBranchRepoName: headBranchRepoName,
+    headBranchName: headBranchName,
+    baseBranchHeadSha: baseBranchHeadSha
+  }
+
+  console.log("prs within populateMergeData::", prs);
+  console.log("commits within populateMergeData::", commits);
 }
 
 // GET pull requests and check their mergeable status
