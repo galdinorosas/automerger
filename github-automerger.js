@@ -175,6 +175,7 @@ function ensurePr(url, head_sha) {
     prs[url].reviews = {};
     prs[url].mergeable = false;
     prs[url].merge_data = {};
+    prs[url].has_merge_conflicts = false;
   }
   commits[head_sha] = url;
 
@@ -306,6 +307,17 @@ function mergeIfReady(url) {
     };
 
     mergePullRequest(url, mergeCallback);
+  } else if (!isMergeable(prs[url]) && Object.keys(prs[url].merge_data).length) {
+    const updateBranchCallback = function(err, res) {
+      console.log("updateBranchCallback err::", err);
+      if (err) {
+        console.error("Error: could not update branch: " + err);
+        return;
+      }
+      console.log("UPDATED HEAD PR (" + url + ")!");
+    };
+
+    updatePullRequestBranch(url, updateBranchCallback)
   }
 }
 
@@ -318,6 +330,22 @@ function mergePullRequest(url, callback) {
   params.sha = prs[url].head_sha;
   console.log("mergePullRequest params::", params);
   octokit.pulls.merge(params).then(res => callback(null, res)).catch(err => callback(err, null));
+}
+
+function updatePullRequestBranch(url, callback) {
+  if (!(url in prs)) {
+    console.error(url + " not found in prs hash");
+    return;
+  }
+
+  const params = {
+    owner: prs[url].merge_data.headBranchUserName,
+    repo: prs[url].merge_data.headBranchRepoName,
+    base: prs[url].merge_data.headBranchName,
+    head: prs[url].merge_data.baseBranchHeadSha
+  };
+  console.log("updatePullRequestBranch params::", params);
+  octokit.repos.merge(params).then(res => callback(null, res)).catch(err => callback(err, null));
 }
 
 function deleteReference(url, callback) {
